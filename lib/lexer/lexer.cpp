@@ -2,6 +2,7 @@
 #define LEXER_H
 
 #include <string>
+#include <map>
 
 // Operators
 const std::string PLUS = "+";
@@ -23,9 +24,32 @@ const std::string RPAREN = ")";
 const std::string LBRACE = "{";
 const std::string RBRACE = "}";
 
+// Keywords
+const std::string FUNCTION = "FUNCTION";
+const std::string LET = "LET";
+const std::string TRUE = "TRUE";
+const std::string FALSE = "FALSE";
+const std::string IF = "IF";
+const std::string ELSE = "ELSE";
+const std::string RETURN = "RETURN";
+
+// Data types
+const std::string INT = "INT";
+
 // Miscellaneous
 const std::string EOf = "EOF";
+const std::string IDENT = "IDENT";
 const std::string ILLEGAL = "ILLEGAL";
+
+std::map<std::string, TokenType> keywords = {
+    {"if", IF},
+    {"let", LET},
+    {"else", ELSE},
+    {"true", TRUE},
+    {"false", FALSE},
+    {"fn", FUNCTION},
+    {"return", RETURN},
+};
 
 using TokenType = std::string;
 
@@ -146,6 +170,28 @@ public:
         else if (curChar == '\0')
         {
             token = Token("", EOf);
+        }
+
+        // Keyword or identifier
+        else if (isalpha(curChar))
+        {
+            std::string tokenText = gatherCharacters();
+
+            // Keyword
+            if (keywords.find(tokenText) != keywords.end())
+            {
+                token = Token(tokenText, keywords[tokenText]);
+            }
+            else
+            { // Identifier
+                token = Token(tokenText, IDENT);
+            }
+        }
+
+        // Int
+        else if (isdigit(curChar))
+        {
+            token = Token(gatherDigits(), INT);
         }
 
         // Illegal character
