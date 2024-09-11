@@ -64,6 +64,26 @@ public:
             curChar = source[curPos];
         }
     };
+
+    // Peeks and returns the upcoming character.
+    char peek()
+    {
+        if (curPos + 1 >= source.length())
+        {
+            return '\0'; // EOF
+        }
+
+        return source[curPos + 1];
+    }
+
+    // Skip whitespace (includes tabs, newlines and carriage returns)
+    void skipWhitespace()
+    {
+        while (curChar == ' ' || curChar == '\t' || curChar == '\n' || curChar == '\r')
+        {
+            nextChar();
+        }
+    }
 };
 
 #endif
