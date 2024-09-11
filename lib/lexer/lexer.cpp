@@ -23,6 +23,10 @@ const std::string RPAREN = ")";
 const std::string LBRACE = "{";
 const std::string RBRACE = "}";
 
+// Miscellaneous
+const std::string EOf = "EOF";
+const std::string ILLEGAL = "ILLEGAL";
+
 using TokenType = std::string;
 
 // Structure for tokens
@@ -31,6 +35,7 @@ struct Token
     TokenType type;
     std::string text; // Holds the literal value of the token
 
+    Token() : text(), type() {}
     Token(std::string text, TokenType type) : text(text), type(type) {}
 };
 
@@ -50,6 +55,111 @@ public:
         nextChar();
     };
 
+    // Returns the next token.
+    Token nextToken()
+    {
+        Token token;
+
+        // By calling skipWhitespace() at the beginning of the function,
+        // we make sure our lexer is not trying to tokenize a whitespace.
+        skipWhitespace();
+
+        // Operators
+        if (curChar == '+')
+        {
+            token = Token("+", PLUS);
+        }
+        else if (curChar == '-')
+        {
+            token = Token("-", MINUS);
+        }
+        else if (curChar == '*')
+        {
+            token = Token("*", ASTERISK);
+        }
+        else if (curChar == '/')
+        {
+            token = Token("/", SLASH);
+        }
+        else if (curChar == '<')
+        {
+            token = Token("<", LT);
+        }
+        else if (curChar == '>')
+        {
+            token = Token(">", GT);
+        }
+
+        else if (curChar == '=')
+        {
+            // Checking if this token is supposed to be = or ==
+            if (peek() == '=')
+            {
+                nextChar();
+                token = Token("==", EQ);
+            }
+            else
+            {
+                token = Token("=", ASSIGN);
+            }
+        }
+
+        else if (curChar == '!')
+        {
+            // Checking if this token is supposed to be ! or !=
+            if (peek() == '=')
+            {
+                nextChar();
+                token = Token("!=", NOT_EQ);
+            }
+            else
+            {
+                token = Token("!", BANG);
+            }
+        }
+
+        // Delimiters
+        else if (curChar == ',')
+        {
+            token = Token(",", COMMA);
+        }
+        else if (curChar == ';')
+        {
+            token = Token(";", SEMICOLON);
+        }
+        else if (curChar == '(')
+        {
+            token = Token("(", LPAREN);
+        }
+        else if (curChar == ')')
+        {
+            token = Token(")", RPAREN);
+        }
+        else if (curChar == '{')
+        {
+            token = Token("{", LBRACE);
+        }
+        else if (curChar == '}')
+        {
+            token = Token("}", RBRACE);
+        }
+        else if (curChar == '\0')
+        {
+            token = Token("", EOf);
+        }
+
+        // Illegal character
+        else
+        {
+            // Since curChar is typed as `char` and Token takes in `std::string`,
+            // converted illegal character to a string.
+            token = Token(std::string(1, curChar), ILLEGAL);
+        };
+
+        nextChar();
+        return token;
+    }
+
     // Processes the next character.
     void nextChar()
     {
@@ -63,7 +173,7 @@ public:
         {
             curChar = source[curPos];
         }
-    };
+    }
 
     // Peeks and returns the upcoming character.
     char peek()
