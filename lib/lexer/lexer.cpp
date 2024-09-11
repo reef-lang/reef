@@ -50,7 +50,7 @@ public:
         nextChar();
     };
 
-    // Process the next character.
+    // Processes the next character.
     void nextChar()
     {
         curPos += 1;
@@ -76,13 +76,39 @@ public:
         return source[curPos + 1];
     }
 
-    // Skip whitespace (includes tabs, newlines and carriage returns)
+    // Skips whitespace (includes tabs, newlines and carriage returns)
     void skipWhitespace()
     {
         while (curChar == ' ' || curChar == '\t' || curChar == '\n' || curChar == '\r')
         {
             nextChar();
         }
+    }
+
+    // Gathers the characters for identifier or keyword
+    std::string gatherCharacters()
+    {
+        int startPosition = curPos;
+
+        while (isalnum(peek()))
+        {
+            nextChar();
+        }
+
+        return source.substr(startPosition, curPos - startPosition + 1); // Getting the substring.
+    }
+
+    // Gathers the digits
+    std::string gatherDigits()
+    {
+        int startPosition = curPos;
+
+        while (isdigit(peek()))
+        {
+            nextChar();
+        }
+
+        return source.substr(startPosition, curPos - startPosition + 1); // Getting the substring.
     }
 };
 
